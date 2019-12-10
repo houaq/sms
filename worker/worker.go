@@ -4,9 +4,9 @@ import (
 	"log"
 	"time"
 
-	"github.com/alexgear/sms/common"
-	"github.com/alexgear/sms/database"
-	"github.com/alexgear/sms/modem"
+	"github.com/houaq/sms/common"
+	"github.com/houaq/sms/database"
+	"github.com/houaq/sms/modem"
 )
 
 var err error
