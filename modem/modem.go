@@ -13,7 +13,8 @@ import (
 	"time"
 
 	"github.com/tarm/serial"
-	pdu "github.com/xlab/at/pdu"
+	"github.com/xlab/at/pdu"
+	"github.com/xlab/at/sms"
 )
 
 var err error
@@ -147,9 +148,9 @@ func Reset() error {
 		"AT+CFUN=1\r",
 		"AT+CMEE=1\r",
 		"AT+COPS=3,0\r",
-		"AT+CMGF=1\r",
+		"AT+CMGF=0\r",
 		"AT+CSMP=49,167,0,0\r",
-		"AT+CPMS=\"ME\",\"ME\",\"ME\"\r",
+		"AT+CPMS=\"MT\",\"MT\",\"MT\"\r",
 		"AT+CNMI=2,1,0,2\r",
 		"AT+CSCS=\"GSM\"\r",
 	}
@@ -176,8 +177,6 @@ func GetBalance(ussdRequest string) (float64, error) {
 	log.Println("GetBalance...")
 	//re-set encoding here?
 	//m.SendCommand("AT+CSCS=\"GSM\"\r", true)
-	//TODO: Is it necessery to run AT+CMGF=0 ???
-	SendCommand("AT+CMGF=0\r", true)
 	SendCommand("AT^USSDMODE=1\r", true)
 	request := strings.ToUpper(fmt.Sprintf("%x", pdu.Encode7Bit(ussdRequest)))
 	_, err = SendCommand(fmt.Sprintf("AT+CUSD=1,\"%s\",15\r", request), true)
@@ -208,24 +207,37 @@ func GetBalance(ussdRequest string) (float64, error) {
 	return 0.0, errors.New("GetBalace: Failed to get balance.")
 }
 
+// encodeMessage encodes the SMS message as PDU data
+func encodeMessage(mobile, message string) (string, int, error) {
+	msg := sms.Message{
+		Text:     message,
+		Type:     sms.MessageTypes.Submit,
+		Encoding: sms.Encodings.UCS2,
+		Address:  sms.PhoneNumber(mobile),
+		VPFormat: sms.ValidityPeriodFormats.Relative,
+		VP:       sms.ValidityPeriod(24 * time.Hour * 4),
+	}
+	n, octets, err := msg.PDU()
+	return fmt.Sprintf("%02X", octets), n, err
+}
+
 func SendMessage(mobile string, message string) error {
 	log.Println("SendMessage...", mobile, message)
-	// Put Modem in SMS Text Mode
-	_, err = SendCommand("AT+CMGF=1\r", true)
+	sPDU, n, err := encodeMessage(mobile, message)
 	if err != nil {
-		return fmt.Errorf("SendMessage: Failed to send command.\n%s", err.Error())
+		return fmt.Errorf("encodeMessage: %s", err.Error())
 	}
 	// Send message
-	_, err = SendCommand("AT+CMGS=\""+mobile+"\"\r", false)
+	_, err = SendCommand(fmt.Sprintf("AT+CMGS=%d\r", n), false)
 	if err != nil {
-		return fmt.Errorf("SendMessage: Failed to send command.\n%s", err.Error())
+		return fmt.Errorf("SendMessage: +CMGS error %s", err.Error())
 	}
 	_, err = WaitForOutput(waitReps, "\r\n> ")
 	if err != nil {
 		return fmt.Errorf("SendMessage: Failed to wait for output.\n%s", err.Error())
 	}
 	// EOM CTRL-Z = 26
-	_, err = SendCommand(message+string(26), true)
+	_, err = SendCommand(sPDU+string(26), true)
 	if err != nil {
 		return fmt.Errorf("SendMessage: Failed to send command.\n%s", err.Error())
 	}
@@ -234,8 +246,6 @@ func SendMessage(mobile string, message string) error {
 
 func DeleteMessage(messageIndex int) error {
 	log.Println("DeleteMessage...")
-	// Put Modem in SMS Text Mode
-	SendCommand("AT+CMGF=1\r", true)
 	_, err = SendCommand(fmt.Sprintf("AT+CMGD=%d\r", messageIndex), true)
 	if err != nil {
 		return fmt.Errorf("DeleteMessage: Failed to send command.\n%s", err.Error())
@@ -290,8 +300,6 @@ func GetMessage(messageIndex int) (*message, error) {
 func GetMessageIndexes() ([]int, error) {
 	var messageIndexes []int
 	log.Println("GetMessageIndexes...")
-	// Put Modem in SMS Text Mode
-	SendCommand("AT+CMGF=1\r", true)
 	// Get message indexes
 	status, err := SendCommand("AT+CMGD=?\r", true)
 	if err != nil {
@@ -330,9 +338,8 @@ func GetMessages() ([]*message, error) {
 		msg, err := GetMessage(messageIndex)
 		if err != nil {
 			return messages, err
-		} else {
-			messages = append(messages, msg)
 		}
+		messages = append(messages, msg)
 	}
 	return messages, nil
 }

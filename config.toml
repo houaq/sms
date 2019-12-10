@@ -1,4 +1,4 @@
-ComPort = "/dev/ttyUSB0"
+ComPort = "/dev/cu.usbserial-A700UOBF"
 BaudRate = 115200
 ServerHost = "0.0.0.0"
 ServerPort = 8080

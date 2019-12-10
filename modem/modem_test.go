@@ -167,7 +167,7 @@ func TestGetMessages(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	for i, _ := range messages {
+	for i := range messages {
 		if !reflect.DeepEqual(messages[i], expectedMessages[i]) {
 			t.Fatalf("Expected %#v\nGot %#v", expectedMessages[i], messages[i])
 		}

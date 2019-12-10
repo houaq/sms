@@ -3,11 +3,11 @@ package main
 import (
 	"log"
 
-	"github.com/alexgear/sms/api"
-	"github.com/alexgear/sms/config"
-	"github.com/alexgear/sms/database"
-	"github.com/alexgear/sms/modem"
-	"github.com/alexgear/sms/worker"
+	"github.com/houaq/sms/api"
+	"github.com/houaq/sms/config"
+	"github.com/houaq/sms/database"
+	"github.com/houaq/sms/modem"
+	"github.com/houaq/sms/worker"
 )
 
 func main() {
