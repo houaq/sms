@@ -4,7 +4,6 @@ go 1.12
 
 require (
 	github.com/BurntSushi/toml v0.0.0-20150501104042-056c9bc7be71
-	github.com/alexgear/sms v0.0.0-20160114164825-09769620ee9a
 	github.com/gorilla/context v0.0.0-20150820051245-1c83b3eabd45
 	github.com/gorilla/mux v0.0.0-20151111103530-9c068cf16d98
 	github.com/mattn/go-sqlite3 v1.13.0
