@@ -6,7 +6,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/alexgear/sms/common"
+	"github.com/houaq/sms/common"
 	_ "github.com/mattn/go-sqlite3"
 )
 

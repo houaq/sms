@@ -6,11 +6,11 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/alexgear/sms/common"
-	db "github.com/alexgear/sms/database"
-	"github.com/alexgear/sms/modem"
 	"github.com/gorilla/mux"
-	"github.com/satori/go.uuid"
+	"github.com/houaq/sms/common"
+	db "github.com/houaq/sms/database"
+	"github.com/houaq/sms/modem"
+	uuid "github.com/satori/go.uuid"
 )
 
 var err error
