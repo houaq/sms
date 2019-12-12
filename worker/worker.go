@@ -11,6 +11,7 @@ import (
 
 var err error
 
+// InitWorker starts the worker
 func InitWorker() {
 	messages := make(chan common.SMS)
 	go producer(messages)
@@ -38,13 +39,13 @@ func producer(messages chan common.SMS) {
 	for {
 		pendingMsgs, err := database.GetPendingMessages()
 		if err != nil {
-			log.Println("producer: failed to get messages. %s", err.Error())
+			log.Printf("producer: failed to get messages. %s", err.Error())
 		}
-		log.Printf("producer: %d pending messages found", len(pendingMsgs))
+		// log.Printf("producer: %d pending messages found", len(pendingMsgs))
 		for _, msg := range pendingMsgs {
 			log.Printf("producer: Processing %#v", msg)
 			messages <- msg
 		}
-		time.Sleep(10000 * time.Millisecond)
+		time.Sleep(time.Second)
 	}
 }

@@ -95,7 +95,7 @@ func GetMessageByUuid(uuid string) (common.SMS, error) {
 }
 
 func GetPendingMessages() ([]common.SMS, error) {
-	log.Println("GetPendingMessages")
+	// log.Println("GetPendingMessages")
 	var messages []common.SMS
 	query := "SELECT uuid, message, mobile, status, retries FROM" +
 		" messages WHERE status != \"sent\" AND retries < 3"
