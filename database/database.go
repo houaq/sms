@@ -98,7 +98,7 @@ func GetPendingMessages() ([]common.SMS, error) {
 	// log.Println("GetPendingMessages")
 	var messages []common.SMS
 	query := "SELECT uuid, message, mobile, status, retries FROM" +
-		" messages WHERE status != \"sent\" AND retries < 3"
+		" messages WHERE status = \"pending\" AND retries < 3"
 
 	rows, err := db.Query(query)
 	if err != nil {
@@ -112,5 +112,6 @@ func GetPendingMessages() ([]common.SMS, error) {
 		messages = append(messages, sms)
 	}
 	//rows.Close()
+	db.Exec("UPDATE messages SET status='sending' WHERE status = \"pending\" AND retries < 3")
 	return messages, nil
 }
