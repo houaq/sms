@@ -149,7 +149,6 @@ func Reset() error {
 		"AT+CMEE=1\r",
 		"AT+COPS=3,0\r",
 		"AT+CMGF=0\r",
-		"AT+CSMP=49,167,0,0\r",
 		"AT+CPMS=\"MT\",\"MT\",\"MT\"\r",
 		"AT+CNMI=2,1,0,2\r",
 		"AT+CSCS=\"GSM\"\r",
