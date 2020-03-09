@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 
+	smslib "github.com/houaq/sms/lib"
 	"github.com/houaq/sms/modem"
 )
 
@@ -12,7 +13,7 @@ func main() {
 		log.Fatalf("main: Invalid config: %s", err.Error())
 	}
 
-	db, err := InitDB("db.sqlite")
+	db, err := smslib.InitDB("db.sqlite")
 	defer db.Close()
 	if err != nil {
 		log.Fatalf("main: Error initializing database: %s", err.Error())
@@ -26,7 +27,7 @@ func main() {
 	if err != nil {
 		log.Fatalf("main: error reseting modem. %s", err)
 	}
-	InitWorker()
+	smslib.InitWorker()
 	err = InitServer(cfg.ServerHost, cfg.ServerPort)
 	if err != nil {
 		log.Fatalf("main: Error starting server: %s", err.Error())

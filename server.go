@@ -7,6 +7,7 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
+	smslib "github.com/houaq/sms/lib"
 	"github.com/houaq/sms/modem"
 	uuid "github.com/satori/go.uuid"
 )
@@ -28,12 +29,12 @@ func sendSMSHandler(w http.ResponseWriter, r *http.Request) {
 	r.ParseForm()
 	log.Printf("sendSMSHandler: %#v %#v", vars, r.Form)
 	uuid := uuid.NewV1()
-	sms := &SMS{
+	sms := &smslib.SMS{
 		UUID:   uuid.String(),
 		Mobile: r.Form["to"][0],
 		Body:   r.Form["text"][0],
 		Status: "pending"}
-	err := InsertMessage(sms)
+	err := smslib.InsertMessage(sms)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -72,7 +73,7 @@ func getBalanceHandler(w http.ResponseWriter, r *http.Request) {
 func getSMSHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	w.Header().Set("Content-type", "application/json")
-	sms, err := GetMessageByUuid(vars["uuid"])
+	sms, err := smslib.GetMessageByUuid(vars["uuid"])
 	if err != nil {
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)

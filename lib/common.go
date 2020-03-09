@@ -1,4 +1,4 @@
-package main
+package lib
 
 // SMS encaps a SMS message
 type SMS struct {
