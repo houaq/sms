@@ -79,7 +79,6 @@ func SendCommand(command string, wait bool) (string, error) {
 }
 
 func WaitForOutput(reps int, suffix string) (string, error) {
-	log.Printf("WaitForOutput... %d %#v", reps, suffix)
 	var status string
 	var buffer bytes.Buffer
 	buf := make([]byte, 32)
@@ -91,8 +90,8 @@ func WaitForOutput(reps int, suffix string) (string, error) {
 		if n > 0 {
 			buffer.Write(buf[:n])
 			status = buffer.String()
-			log.Printf("WaitForOutput: received %d bytes: %#v\n", n, string(buf[:n]))
 			if strings.HasSuffix(status, suffix) {
+				log.Printf("WaitForOutput: %s", status)
 				return status, nil
 			} else if regexp.MustCompile(`[A-Z ]*ERROR[0-9A-Za-z ]*`).MatchString(status) {
 				errorCodes := regexp.MustCompile(`([A-Z ]*)ERROR([0-9A-Za-z :]*)`).FindAllStringSubmatch(status, -1)
@@ -103,7 +102,6 @@ func WaitForOutput(reps int, suffix string) (string, error) {
 				}
 			}
 		} else {
-			log.Printf("WaitForOutput: No output on %dth iteration", i)
 			// time.Sleep(time.Millisecond * 500)
 			i++
 		}
