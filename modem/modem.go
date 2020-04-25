@@ -59,6 +59,11 @@ func InitModem(ComPort string, BaudRate int) (err error) {
 	return nil
 }
 
+func CloseModem() error {
+	m.Port.Flush()
+	return m.Port.Close()
+}
+
 func SendCommand(command string, wait bool) (string, error) {
 	log.Println("SendCommand...", command)
 	lock.Lock()
